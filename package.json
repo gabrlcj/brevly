@@ -4,7 +4,12 @@
   "description": "A URL shortner.",
   "main": "index.js",
   "scripts": {
-    "dev": "tsx watch src/infra/http/server.ts"
+    "dev": "tsx watch --env-file .env src/infra/http/server.ts",
+    "test": "dotenv -e .env.test -- vitest run",
+    "test:watch": "dotenv -e .env.test -- vitest",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:studio": "drizzle-kit studio"
   },
   "keywords": [],
   "author": "",
@@ -13,13 +18,20 @@
   "devDependencies": {
     "@biomejs/biome": "^2.0.5",
     "@types/node": "^24.0.3",
+    "dotenv-cli": "^8.0.0",
+    "drizzle-kit": "^0.31.2",
     "tsx": "^4.20.3",
-    "typescript": "^5.8.3"
+    "typescript": "^5.8.3",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
   },
   "dependencies": {
     "@fastify/cors": "^11.0.1",
+    "drizzle-orm": "^0.44.2",
     "fastify": "^5.4.0",
     "fastify-type-provider-zod": "^5.0.1",
+    "postgres": "^3.4.7",
+    "uuidv7": "^1.0.2",
     "zod": "^3.25.67"
   }
 }
