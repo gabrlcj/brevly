@@ -9,10 +9,10 @@ export const deleteLinkSchema = z.object({
   shortUrl: z.string(),
 })
 
-type DeleteLinkSchemaInput = z.infer<typeof deleteLinkSchema>
+type DeleteLinkInput = z.infer<typeof deleteLinkSchema>
 
 export async function deleteLink(
-  input: DeleteLinkSchemaInput
+  input: DeleteLinkInput
 ): Promise<Either<NotFound, object>> {
   const { shortUrl } = deleteLinkSchema.parse(input)
 

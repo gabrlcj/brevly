@@ -11,10 +11,10 @@ export const createLinkSchema = z.object({
   shortUrl: z.string(),
 })
 
-type CreateLinkSchemaInput = z.infer<typeof createLinkSchema>
+type CreateLinkInput = z.infer<typeof createLinkSchema>
 
 export async function createLink(
-  input: CreateLinkSchemaInput
+  input: CreateLinkInput
 ): Promise<Either<ShortUrlAlreadyExists, { url: string }>> {
   const { originalUrl, shortUrl } = createLinkSchema.parse(input)
 
