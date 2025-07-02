@@ -13,7 +13,7 @@ export const fetchLinksSchema = z.object({
 
 type FetchLinksInput = z.infer<typeof fetchLinksSchema>
 
-interface FetchLinksOutput {
+type FetchLinksOutput = {
   links: {
     id: string
     shortUrl: string
