@@ -2,7 +2,6 @@ import { eq } from 'drizzle-orm'
 import { z } from 'zod/v4'
 import { db } from '@/infra/db'
 import { schema } from '@/infra/db/schemas'
-import { env } from '@/infra/env'
 import { type Either, makeLeft, makeRight } from '@/shared/either'
 import { ShortUrlAlreadyExists } from './errors/short-url-already-exists'
 
@@ -13,9 +12,14 @@ export const createLinkSchema = z.object({
 
 type CreateLinkInput = z.infer<typeof createLinkSchema>
 
+type CreateLinkOutput = {
+  originalUrl: string
+  shortUrl: string
+}
+
 export async function createLink(
   input: CreateLinkInput
-): Promise<Either<ShortUrlAlreadyExists, { url: string }>> {
+): Promise<Either<ShortUrlAlreadyExists, CreateLinkOutput>> {
   const { originalUrl, shortUrl } = createLinkSchema.parse(input)
 
   const existingLink = await db.query.links.findFirst({
@@ -31,5 +35,5 @@ export async function createLink(
     shortUrl,
   })
 
-  return makeRight({ url: `http://localhost:${env.PORT}/${shortUrl}` })
+  return makeRight({ originalUrl, shortUrl })
 }
