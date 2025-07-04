@@ -9,6 +9,7 @@ export const fetchLinksRoute: FastifyPluginAsyncZod = async server => {
     {
       schema: {
         summary: 'Fetch list of registered links',
+        tags: ['links'],
         querystring: z.object({
           page: z.coerce.number().optional().default(1),
           pageSize: z.coerce.number().optional().default(20),

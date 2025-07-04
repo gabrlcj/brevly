@@ -9,6 +9,7 @@ export const createLinkRoute: FastifyPluginAsyncZod = async server => {
     {
       schema: {
         summary: 'Create link with shortened URL',
+        tags: ['links'],
         body: z.object({
           originalUrl: z.url({
             protocol: /^https?$/,
@@ -35,12 +36,10 @@ export const createLinkRoute: FastifyPluginAsyncZod = async server => {
       const result = await createLink({ originalUrl, shortUrl })
 
       if (isRight(result)) {
-        return reply
-          .status(201)
-          .send({
-            originalUrl: unwrapEither(result).originalUrl,
-            shortUrl: unwrapEither(result).shortUrl,
-          })
+        return reply.status(201).send({
+          originalUrl: unwrapEither(result).originalUrl,
+          shortUrl: unwrapEither(result).shortUrl,
+        })
       }
 
       const error = unwrapEither(result)

@@ -9,6 +9,7 @@ export const getLinkByShortUrlRoute: FastifyPluginAsyncZod = async server => {
     {
       schema: {
         summary: 'Get original link by short URL',
+        tags: ['links'],
         params: z.object({
           shortUrl: z.string(),
         }),
