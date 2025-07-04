@@ -10,6 +10,7 @@ import {
 } from 'fastify-type-provider-zod'
 import { createLinkRoute } from './routes/create-link'
 import { deleteLinkRoute } from './routes/delete-link'
+import { exportLinksRoute } from './routes/export-links'
 import { fetchLinksRoute } from './routes/fetch-links'
 import { getLinkByShortUrlRoute } from './routes/get-link-by-short-url'
 
@@ -47,6 +48,7 @@ server.register(createLinkRoute)
 server.register(deleteLinkRoute)
 server.register(fetchLinksRoute)
 server.register(getLinkByShortUrlRoute)
+server.register(exportLinksRoute)
 
 server.listen({ port: 3333, host: '0.0.0.0' }).then(() => {
   console.log('HTTP server is running!')
