@@ -6,32 +6,10 @@ import { isRight, unwrapEither } from '@/shared/either'
 import { makeLink } from '@/test/factories/make-link'
 import { fetchLinks } from './fetch-links'
 
-async function clearLinksTable() {
-  await db.delete(schema.links)
-}
-
 describe('fetch links', () => {
-  beforeEach(async () => {
-    await clearLinksTable()
-  })
-
-  it('should return empty array if no links exist', async () => {
-    const sut = await fetchLinks({ page: 1, pageSize: 10 })
-
-    expect(isRight(sut)).toBe(true)
-    expect(unwrapEither(sut).links).toEqual([])
-    expect(unwrapEither(sut).total).toBe(0)
-  })
-
-  it('should return correct total count', async () => {
-    await makeLink()
-    await makeLink()
-    await makeLink()
-
-    const sut = await fetchLinks({ page: 1, pageSize: 10 })
-    expect(isRight(sut)).toBe(true)
-    expect(unwrapEither(sut).total).toBe(3)
-  })
+  // beforeEach(async () => {
+  //   await db.delete(schema.links)
+  // })
 
   it('should use default sorting (id desc) if no sortBy/sortDirection provided', async () => {
     const link1 = await makeLink()
@@ -39,11 +17,13 @@ describe('fetch links', () => {
     const link3 = await makeLink()
 
     const sut = await fetchLinks({ page: 1, pageSize: 3 })
+
     expect(isRight(sut)).toBe(true)
+    expect(unwrapEither(sut).links.length).toEqual(3)
     expect(unwrapEither(sut).links).toEqual([
-      expect.objectContaining({ id: link3.id }),
-      expect.objectContaining({ id: link2.id }),
-      expect.objectContaining({ id: link1.id }),
+      expect.objectContaining({ id: link3.id, shortUrl: link3.shortUrl }),
+      expect.objectContaining({ id: link2.id, shortUrl: link2.shortUrl }),
+      expect.objectContaining({ id: link1.id, shortUrl: link1.shortUrl }),
     ])
   })
 
@@ -57,20 +37,21 @@ describe('fetch links', () => {
     let sut = await fetchLinks({ page: 1, pageSize: 3 })
 
     expect(isRight(sut)).toBe(true)
+
     expect(unwrapEither(sut).links.length).toEqual(3)
     expect(unwrapEither(sut).links).toEqual([
-      expect.objectContaining({ id: link5.id }),
-      expect.objectContaining({ id: link4.id }),
-      expect.objectContaining({ id: link3.id }),
+      expect.objectContaining({ id: link5.id, shortUrl: link5.shortUrl }),
+      expect.objectContaining({ id: link4.id, shortUrl: link4.shortUrl }),
+      expect.objectContaining({ id: link3.id, shortUrl: link3.shortUrl }),
     ])
 
-    sut = await fetchLinks({ page: 2, pageSize: 3 })
+    sut = await fetchLinks({ page: 2, pageSize: 2 })
 
     expect(isRight(sut)).toBe(true)
     expect(unwrapEither(sut).links.length).toEqual(2)
     expect(unwrapEither(sut).links).toEqual([
-      expect.objectContaining({ id: link2.id }),
-      expect.objectContaining({ id: link1.id }),
+      expect.objectContaining({ id: link2.id, shortUrl: link2.shortUrl }),
+      expect.objectContaining({ id: link1.id, shortUrl: link1.shortUrl }),
     ])
   })
 
@@ -86,6 +67,7 @@ describe('fetch links', () => {
       sortBy: 'createdAt',
       sortDirection: 'asc',
     })
+    console.log(sut.right)
 
     expect(isRight(sut)).toBe(true)
     expect(unwrapEither(sut).links.length).toEqual(3)

@@ -1,12 +1,15 @@
 import { PassThrough, Transform } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
 import { stringify } from 'csv-stringify'
+import { ilike } from 'drizzle-orm'
 import { db, pg } from '@/infra/db'
 import { schema } from '@/infra/db/schemas'
 import { uploadFileToStorage } from '@/infra/storage/upload-file-to-storage'
-import { makeRight } from '@/shared/either'
+import { Either, makeRight } from '@/shared/either'
 
-export async function exportLinks() {
+export async function exportLinks(
+  searchParam?: string
+): Promise<Either<never, { url: string }>> {
   const { sql, params } = db
     .select({
       originalUrl: schema.links.originalUrl,
@@ -15,6 +18,11 @@ export async function exportLinks() {
       createdAt: schema.links.createdAt,
     })
     .from(schema.links)
+    .where(
+      searchParam
+        ? ilike(schema.links.originalUrl, `%${searchParam}$`)
+        : undefined
+    )
     .toSQL()
 
   const cursor = pg.unsafe(sql, params as string[]).cursor(2)
@@ -32,7 +40,7 @@ export async function exportLinks() {
 
   const uploadToStorageStream = new PassThrough()
 
-  const convertToCSVPipeline = pipeline(
+  const convertToCsvPipeline = pipeline(
     cursor,
     new Transform({
       objectMode: true,
@@ -55,7 +63,7 @@ export async function exportLinks() {
     fileName: `links-${new Date().toISOString()}.csv`,
   })
 
-  const [{ url }] = await Promise.all([uploadToStorage, convertToCSVPipeline])
+  const [{ url }] = await Promise.all([uploadToStorage, convertToCsvPipeline])
 
   return makeRight({ url })
 }
