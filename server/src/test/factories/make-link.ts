@@ -2,6 +2,7 @@ import { randomUUID } from 'node:crypto'
 import type { InferInsertModel } from 'drizzle-orm'
 import { db } from '@/infra/db'
 import { schema } from '@/infra/db/schemas'
+import { env } from '@/infra/env'
 
 export async function makeLink(
   overrides?: Partial<InferInsertModel<typeof schema.links>>
@@ -10,7 +11,7 @@ export async function makeLink(
     .insert(schema.links)
     .values({
       shortUrl: `${randomUUID()}`,
-      originalUrl: `http://localhost:3333/${randomUUID()}`,
+      originalUrl: `http://localhost:${env.PORT}/${randomUUID()}`,
       ...overrides,
     })
     .returning()
