@@ -1,0 +1,45 @@
+import { Link, useParams } from "react-router";
+import LogoIcon from '../assets/Logo_Icon.svg'
+import { useEffect, useState } from "react";
+import axios from "axios";
+
+export function Redirect() {
+  const { shortUrl } = useParams()
+  const [originalUrl, setOriginalUrl] = useState('')
+
+  useEffect(() => {
+    const fetchAndRedirect = async () => {
+      try {
+        const res = await axios.get(`http://localhost:3333/${shortUrl}`)
+
+        setOriginalUrl(res.data.originalUrl)
+
+        window.location.replace(res.data.originalUrl)
+      } catch (error) {
+        window.location.replace('not-found')
+      }
+    }
+
+    fetchAndRedirect()
+  }, [shortUrl])
+
+  return (
+    <div className='min-h-dvh flex items-center justify-center mx-auto px-5 py-8 md:py-0'>
+      <div className='w-full max-w-[580px] flex flex-col justify-center items-center gap-6 bg-white rounded-lg py-16 px-12'>
+        <img src={LogoIcon} alt='Logo icon' width={48} height={48} />
+
+        <h1 className='text-xl font-bold text-center text-gray-600'>
+          Redirecionando...
+        </h1>
+
+        <div className='flex flex-col gap-1 text-md font-semibold text-center text-gray-500'>
+          <p>
+            O link será aberto automaticamente em alguns instantes.
+          </p>
+
+          <p>Não foi redirecionado? <Link to={originalUrl} className='text-blue-base underline'>Acesse aqui</Link></p>
+        </div>
+      </div>
+    </div>
+  )
+}
