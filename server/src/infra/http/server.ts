@@ -13,6 +13,7 @@ import { deleteLinkRoute } from './routes/delete-link'
 import { exportLinksRoute } from './routes/export-links'
 import { fetchLinksRoute } from './routes/fetch-links'
 import { getLinkByShortUrlRoute } from './routes/get-link-by-short-url'
+import { updateLinkAccessCountRoute } from './routes/update-link-access-count'
 
 const server = fastify()
 
@@ -51,6 +52,7 @@ server.register(createLinkRoute)
 server.register(deleteLinkRoute)
 server.register(fetchLinksRoute)
 server.register(getLinkByShortUrlRoute)
+server.register(updateLinkAccessCountRoute)
 server.register(exportLinksRoute)
 
 server.listen({ port: 3333, host: '0.0.0.0' }).then(() => {

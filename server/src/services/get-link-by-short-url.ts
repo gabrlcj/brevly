@@ -26,12 +26,5 @@ export async function getLinkByShortUrl(
     return makeLeft(new NotFound())
   }
 
-  existingLink.accessCount++
-
-  await db
-    .update(schema.links)
-    .set({ accessCount: existingLink.accessCount })
-    .where(eq(schema.links.id, existingLink.id))
-
   return makeRight(existingLink)
 }
