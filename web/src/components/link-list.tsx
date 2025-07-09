@@ -31,7 +31,7 @@ export function LinkList() {
       </div>
 
       <ScrollArea.Root className='overflow-hidden'>
-        <ScrollArea.Viewport className='max-h-[380px]'>
+        <ScrollArea.Viewport className='max-h-[480px]'>
           {isLoading
             ? <div className="flex flex-col justify-center items-center gap-3 py-6 border-t border-gray-200">
                 <SpinnerIcon className="animate-spin" size={32} />
