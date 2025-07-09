@@ -1,22 +1,21 @@
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { Link, useParams } from "react-router";
+import { useEffect, useState } from 'react';
+import { Link, useParams } from 'react-router';
 import LogoIcon from '../assets/Logo_Icon.svg'
-
-const API_URL = import.meta.env.VITE_BACKEND_URL;
+import { useLinks } from '../store/link';
 
 export function Redirect() {
   const { shortUrl } = useParams()
   const [originalUrl, setOriginalUrl] = useState('')
+  const getLinkByShortUrl = useLinks(store => store.getLinkByShortUrl)
 
   useEffect(() => {
     const fetchAndRedirect = async () => {
       try {
-        const res = await axios.get(`${API_URL}/${shortUrl}`)
+        const { originalUrl } = await getLinkByShortUrl(shortUrl!)
 
-        setOriginalUrl(res.data.originalUrl)
+        setOriginalUrl(originalUrl)
 
-        window.location.replace(res.data.originalUrl)
+        window.location.replace(originalUrl)
       } catch (error) {
         window.location.replace('not-found')
       }

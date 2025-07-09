@@ -16,6 +16,7 @@ type LinkAction = {
   fetchLinks: () => void
   createLink: ({ originalUrl, shortUrl }: LinkFormSchema) => Promise<void>
   deleteLink: (shortUrl: string) => void
+  getLinkByShortUrl: (shortUrl: string) => Promise<ILink>
   registerAccess: (shortUrl: string) => Promise<string>
   downloadCsv: () => Promise<void>
 }
@@ -48,18 +49,25 @@ export const useLinks = create<LinkState & LinkAction>()(
       })
     },
     deleteLink: async (shortUrl: string) => {
-      await axios.delete(`${API_URL}/${shortUrl}`)
-
       const result = confirm(`Deseja realmente apagar o link ${shortUrl}?`);
 
       if (result) {
+        await axios.delete(`${API_URL}/${shortUrl}`)
+
         set(state => {
           state.links.links = state.links.links.filter(link => link.shortUrl !== shortUrl)
           state.links.total -= 1
         })
       }
     },
+    getLinkByShortUrl: async (shortUrl: string) => {
+      const { data } = await axios.get<ILink>(`${API_URL}/${shortUrl}`)
+
+      return data
+    },
     registerAccess: async (shortUrl: string) => {
+      await axios.put(`${API_URL}/${shortUrl}/increment`)
+
       const res = await axios.get<ILink>(`${API_URL}/${shortUrl}`)
 
       set(state => {

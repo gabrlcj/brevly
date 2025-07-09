@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { WarningIcon } from '@phosphor-icons/react'
+import { SpinnerIcon, WarningIcon } from '@phosphor-icons/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, type SubmitHandler } from 'react-hook-form'
 import { z } from 'zod/v4'
@@ -114,7 +114,15 @@ export function LinkForm() {
           </div>
         </div>
 
-        <Button type='submit' disabled={isSubmitting}>{isSubmitting ? 'Salvando...' : 'Salvar link'}</Button>
+        <Button type='submit' disabled={isSubmitting}>
+          {isSubmitting
+            ? <div className='flex items-center justify-center gap-2'>
+                <SpinnerIcon className='animate-spin' size={16} />
+                <p>Salvando...</p>
+              </div>
+            : 'Salvar link'
+          }
+        </Button>
       </form>
     </div>
   )
