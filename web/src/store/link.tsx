@@ -5,6 +5,8 @@ import type { ILink, LinkList } from '../shared/interfaces/link'
 import type { LinkFormSchema } from '../components/link-form'
 import { downloadUrl } from '../utils/download-url'
 
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
 type LinksState = {
   links: LinkList
   isLoading: boolean
@@ -24,7 +26,7 @@ export const useLinks = create<LinksState>()(
         state.isLoading = true;
       })
 
-      const res = await axios.get<LinkList>('http://localhost:3333/links')
+      const res = await axios.get<LinkList>(`${API_URL}/links`)
 
       set(state => {
         state.links = res.data
@@ -33,7 +35,7 @@ export const useLinks = create<LinksState>()(
     },
     createLink: async ({ originalUrl, shortUrl }: LinkFormSchema) => {
       const res = await axios.post<ILink>(
-        'http://localhost:3333/links',
+        `${API_URL}/links`,
         { originalUrl, shortUrl }
       )
 
@@ -43,7 +45,7 @@ export const useLinks = create<LinksState>()(
       })
     },
     deleteLink: async (shortUrl: string) => {
-      await axios.delete(`http://localhost:3333/${shortUrl}`)
+      await axios.delete(`${API_URL}/${shortUrl}`)
 
       const result = confirm(`Deseja realmente apagar o link ${shortUrl}?`);
 
@@ -55,7 +57,7 @@ export const useLinks = create<LinksState>()(
       }
     },
     registerAccess: async (shortUrl: string) => {
-      const res = await axios.get<ILink>(`http://localhost:3333/${shortUrl}`)
+      const res = await axios.get<ILink>(`${API_URL}/${shortUrl}`)
 
       set(state => {
         const index = state.links.links.findIndex(x => x.shortUrl === shortUrl)
@@ -66,7 +68,7 @@ export const useLinks = create<LinksState>()(
       return res.data.originalUrl
     },
     downloadCsv: async () => {
-      const { data: { url }} = await axios.post<{ url: string }>('http://localhost:3333/links/export')
+      const { data: { url }} = await axios.post<{ url: string }>(`${API_URL}/links/export`)
 
       await downloadUrl(url)
     }

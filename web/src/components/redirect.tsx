@@ -3,6 +3,8 @@ import LogoIcon from '../assets/Logo_Icon.svg'
 import { useEffect, useState } from "react";
 import axios from "axios";
 
+const API_URL = import.meta.env.VITE_BACKEND_URL;
+
 export function Redirect() {
   const { shortUrl } = useParams()
   const [originalUrl, setOriginalUrl] = useState('')
@@ -10,7 +12,7 @@ export function Redirect() {
   useEffect(() => {
     const fetchAndRedirect = async () => {
       try {
-        const res = await axios.get(`http://localhost:3333/${shortUrl}`)
+        const res = await axios.get(`${API_URL}/${shortUrl}`)
 
         setOriginalUrl(res.data.originalUrl)
 

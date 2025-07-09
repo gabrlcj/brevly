@@ -5,6 +5,8 @@ import { useLinks } from "../store/link"
 import { Link } from "react-router"
 import { toast } from 'react-hot-toast';
 
+const FRONT_URL = import.meta.env.VITE_FRONTEND_URL;
+
 interface LinkItemProps {
   link: ILink
 }
@@ -15,7 +17,7 @@ export function LinkItem({ link }: LinkItemProps) {
 
   const copyToClipBoard = async () => {
     try {
-      await navigator.clipboard.writeText(`http://localhost:5173/${link.shortUrl}`);
+      await navigator.clipboard.writeText(`${FRONT_URL}/${link.shortUrl}`);
       toast.success('Link copiado com sucesso!');
     } catch (err) {
       toast.error('Erro ao copiar');
