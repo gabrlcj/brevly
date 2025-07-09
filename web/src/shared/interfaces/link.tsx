@@ -1,4 +1,4 @@
-export interface LinkList {
+export interface ILinkList {
   links: {
     id: string
     shortUrl: string

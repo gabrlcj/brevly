@@ -8,7 +8,7 @@ export function Home() {
         <div className='w-full md:max-w-[440px]'>
           <LinkForm />
         </div>
-        <div className='w-full md:max-w-[620px]'>
+        <div className='w-full md:max-w-[580px]'>
           <LinkList />
         </div>
       </div>

@@ -4,7 +4,6 @@ import * as ScrollArea from '@radix-ui/react-scroll-area'
 import { Button } from "./ui/button";
 import { LinkItem } from "./link-item";
 import { useLinks } from "../store/link";
-import type { LinkList } from "../shared/interfaces/link";
 
 export function LinkList() {
   const fetchLinks = useLinks(store => store.fetchLinks)

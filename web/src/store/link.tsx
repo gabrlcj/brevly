@@ -3,13 +3,16 @@ import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
 import { downloadUrl } from '../utils/download-url'
 import type { LinkFormSchema } from '../components/link-form'
-import type { ILink, LinkList } from '../shared/interfaces/link'
+import type { ILink, ILinkList } from '../shared/interfaces/link'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 
-type LinksState = {
-  links: LinkList
+type LinkState = {
+  links: ILinkList
   isLoading: boolean
+}
+
+type LinkAction = {
   fetchLinks: () => void
   createLink: ({ originalUrl, shortUrl }: LinkFormSchema) => Promise<void>
   deleteLink: (shortUrl: string) => void
@@ -17,7 +20,7 @@ type LinksState = {
   downloadCsv: () => Promise<void>
 }
 
-export const useLinks = create<LinksState>()(
+export const useLinks = create<LinkState & LinkAction>()(
   immer((set) => ({
     links: { links: [], total: 0 },
     isLoading: false,
@@ -26,7 +29,7 @@ export const useLinks = create<LinksState>()(
         state.isLoading = true;
       })
 
-      const res = await axios.get<LinkList>(`${API_URL}/links`)
+      const res = await axios.get<ILinkList>(`${API_URL}/links`)
 
       set(state => {
         state.links = res.data
