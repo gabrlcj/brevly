@@ -1,9 +1,9 @@
 import axios from 'axios'
 import { create } from 'zustand'
 import { immer } from 'zustand/middleware/immer'
-import type { ILink, LinkList } from '../shared/interfaces/link'
-import type { LinkFormSchema } from '../components/link-form'
 import { downloadUrl } from '../utils/download-url'
+import type { LinkFormSchema } from '../components/link-form'
+import type { ILink, LinkList } from '../shared/interfaces/link'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 

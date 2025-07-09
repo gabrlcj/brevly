@@ -1,10 +1,10 @@
+import { useEffect } from "react";
 import { DownloadSimpleIcon, LinkIcon, SpinnerIcon } from "@phosphor-icons/react";
+import * as ScrollArea from '@radix-ui/react-scroll-area'
 import { Button } from "./ui/button";
-import type { LinkList } from "../shared/interfaces/link";
 import { LinkItem } from "./link-item";
 import { useLinks } from "../store/link";
-import { useEffect } from "react";
-import * as ScrollArea from '@radix-ui/react-scroll-area'
+import type { LinkList } from "../shared/interfaces/link";
 
 export function LinkList() {
   const fetchLinks = useLinks(store => store.fetchLinks)

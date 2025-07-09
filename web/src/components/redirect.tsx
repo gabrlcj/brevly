@@ -1,7 +1,7 @@
-import { Link, useParams } from "react-router";
-import LogoIcon from '../assets/Logo_Icon.svg'
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Link, useParams } from "react-router";
+import LogoIcon from '../assets/Logo_Icon.svg'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL;
 

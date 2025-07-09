@@ -1,9 +1,9 @@
 import { CopyIcon, TrashIcon } from "@phosphor-icons/react"
-import type { ILink } from "../shared/interfaces/link"
-import { Button } from "./ui/button"
-import { useLinks } from "../store/link"
 import { Link } from "react-router"
 import { toast } from 'react-hot-toast';
+import { Button } from "./ui/button"
+import { useLinks } from "../store/link"
+import type { ILink } from "../shared/interfaces/link"
 
 const FRONT_URL = import.meta.env.VITE_FRONTEND_URL;
 
