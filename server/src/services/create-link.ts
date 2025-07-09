@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, InferSelectModel } from 'drizzle-orm'
 import { z } from 'zod/v4'
 import { db } from '@/infra/db'
 import { schema } from '@/infra/db/schemas'
@@ -12,10 +12,7 @@ export const createLinkSchema = z.object({
 
 type CreateLinkInput = z.infer<typeof createLinkSchema>
 
-type CreateLinkOutput = {
-  originalUrl: string
-  shortUrl: string
-}
+type CreateLinkOutput = InferSelectModel<typeof schema.links>
 
 export async function createLink(
   input: CreateLinkInput
@@ -30,10 +27,13 @@ export async function createLink(
     return makeLeft(new ShortUrlAlreadyExists())
   }
 
-  await db.insert(schema.links).values({
+  const result = await db.insert(schema.links).values({
     originalUrl,
     shortUrl,
   })
+  .returning()
 
-  return makeRight({ originalUrl, shortUrl })
+  const link = result[0]
+
+  return makeRight(link)
 }

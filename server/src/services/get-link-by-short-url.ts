@@ -1,4 +1,4 @@
-import { eq } from 'drizzle-orm'
+import { eq, InferSelectModel } from 'drizzle-orm'
 import { z } from 'zod/v4'
 import { db } from '@/infra/db'
 import { schema } from '@/infra/db/schemas'
@@ -11,9 +11,11 @@ export const getLinkByShortUrlSchema = z.object({
 
 type GetLinkByShortUrlInput = z.infer<typeof getLinkByShortUrlSchema>
 
+type CreateLinkOutput = InferSelectModel<typeof schema.links>
+
 export async function getLinkByShortUrl(
   input: GetLinkByShortUrlInput
-): Promise<Either<NotFound, { originalUrl: string }>> {
+): Promise<Either<NotFound, CreateLinkOutput>> {
   const { shortUrl } = getLinkByShortUrlSchema.parse(input)
 
   const existingLink = await db.query.links.findFirst({
@@ -31,5 +33,5 @@ export async function getLinkByShortUrl(
     .set({ accessCount: existingLink.accessCount })
     .where(eq(schema.links.id, existingLink.id))
 
-  return makeRight({ originalUrl: existingLink.originalUrl })
+  return makeRight(existingLink)
 }

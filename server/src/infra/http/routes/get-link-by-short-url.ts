@@ -15,7 +15,11 @@ export const getLinkByShortUrlRoute: FastifyPluginAsyncZod = async server => {
         }),
         response: {
           200: z.object({
+            id: z.uuid(),
             originalUrl: z.url(),
+            shortUrl: z.string(),
+            accessCount: z.int(),
+            createdAt: z.date(),
           }),
           404: z.object({ message: z.string() }).describe('Link not found.'),
         },
@@ -29,7 +33,13 @@ export const getLinkByShortUrlRoute: FastifyPluginAsyncZod = async server => {
       if (isRight(result)) {
         return reply
           .status(200)
-          .send({ originalUrl: unwrapEither(result).originalUrl })
+          .send({
+            id: unwrapEither(result).id,
+            originalUrl: unwrapEither(result).originalUrl,
+            shortUrl: unwrapEither(result).shortUrl,
+            accessCount: unwrapEither(result).accessCount,
+            createdAt: unwrapEither(result).createdAt,
+          })
       }
 
       const error = unwrapEither(result)
