@@ -27,11 +27,13 @@ export async function createLink(
     return makeLeft(new ShortUrlAlreadyExists())
   }
 
-  const result = await db.insert(schema.links).values({
-    originalUrl,
-    shortUrl,
-  })
-  .returning()
+  const result = await db
+    .insert(schema.links)
+    .values({
+      originalUrl,
+      shortUrl,
+    })
+    .returning()
 
   const link = result[0]
 

@@ -10,13 +10,16 @@ export const exportLinksRoute: FastifyPluginAsyncZod = async server => {
       schema: {
         summary: 'Export all links',
         tags: ['links'],
+        querystring: z.object({ searchQuery: z.string().optional() }),
         response: {
           200: z.object({ url: z.url() }),
         },
       },
     },
-    async (_request, reply) => {
-      const result = await exportLinks()
+    async (request, reply) => {
+      const { searchQuery } = request.query
+
+      const result = await exportLinks({ searchQuery })
 
       return reply.status(200).send({ url: unwrapEither(result).url })
     }

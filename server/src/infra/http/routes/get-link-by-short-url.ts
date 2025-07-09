@@ -31,15 +31,13 @@ export const getLinkByShortUrlRoute: FastifyPluginAsyncZod = async server => {
       const result = await getLinkByShortUrl({ shortUrl })
 
       if (isRight(result)) {
-        return reply
-          .status(200)
-          .send({
-            id: unwrapEither(result).id,
-            originalUrl: unwrapEither(result).originalUrl,
-            shortUrl: unwrapEither(result).shortUrl,
-            accessCount: unwrapEither(result).accessCount,
-            createdAt: unwrapEither(result).createdAt,
-          })
+        return reply.status(200).send({
+          id: unwrapEither(result).id,
+          originalUrl: unwrapEither(result).originalUrl,
+          shortUrl: unwrapEither(result).shortUrl,
+          accessCount: unwrapEither(result).accessCount,
+          createdAt: unwrapEither(result).createdAt,
+        })
       }
 
       const error = unwrapEither(result)

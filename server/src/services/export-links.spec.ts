@@ -1,34 +1,28 @@
 import { randomUUID } from 'node:crypto'
-import { db } from '@/infra/db'
-import { schema } from '@/infra/db/schemas'
 import * as uploads from '@/infra/storage/upload-file-to-storage'
 import { isRight, unwrapEither } from '@/shared/either'
 import { makeLink } from '@/test/factories/make-link'
 import { exportLinks } from './export-links'
 
 describe('export links', () => {
-  // beforeEach(async () => {
-  //   await db.delete(schema.links)
-  // })
-
   it('should be able to export a CSV of the links', async () => {
     const uploadStub = vi
       .spyOn(uploads, 'uploadFileToStorage')
       .mockImplementationOnce(async () => {
         return {
-          key: `${randomUUID}.csv`,
+          key: `${randomUUID()}.csv`,
           url: `http://example.com/downloads/file.csv`,
         }
       })
 
-    const originalUrlPattern = 'http://example.com'
+    const originalUrlPattern = `http://${randomUUID()}.com`
     const link1 = await makeLink({ originalUrl: originalUrlPattern })
     const link2 = await makeLink({ originalUrl: originalUrlPattern })
     const link3 = await makeLink({ originalUrl: originalUrlPattern })
     const link4 = await makeLink({ originalUrl: originalUrlPattern })
     const link5 = await makeLink({ originalUrl: originalUrlPattern })
 
-    const sut = await exportLinks(originalUrlPattern)
+    const sut = await exportLinks({ searchQuery: originalUrlPattern })
 
     const generatedCsvStream = uploadStub.mock.calls[0][0].contentStream
     const csvAsString = await new Promise<string>((resolve, reject) => {

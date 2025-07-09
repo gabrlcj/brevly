@@ -11,7 +11,7 @@ export async function makeLink(
     .insert(schema.links)
     .values({
       shortUrl: `${randomUUID()}`,
-      originalUrl: `http://localhost:${env.PORT}/${randomUUID()}`,
+      originalUrl: `http://localhost:${env.PORT}}`,
       ...overrides,
     })
     .returning()

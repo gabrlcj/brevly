@@ -15,6 +15,7 @@ export const fetchLinksRoute: FastifyPluginAsyncZod = async server => {
           pageSize: z.coerce.number().optional().default(20),
           sortBy: z.enum(['createdAt']).optional(),
           sortDirection: z.enum(['asc', 'desc']).optional(),
+          searchQuery: z.string().optional(),
         }),
         response: {
           200: z.object({
@@ -33,13 +34,15 @@ export const fetchLinksRoute: FastifyPluginAsyncZod = async server => {
       },
     },
     async (request, reply) => {
-      const { page, pageSize, sortBy, sortDirection } = request.query
+      const { page, pageSize, sortBy, sortDirection, searchQuery } =
+        request.query
 
       const result = await fetchLinks({
         page,
         pageSize,
         sortBy,
         sortDirection,
+        searchQuery,
       })
 
       const { links, total } = unwrapEither(result)

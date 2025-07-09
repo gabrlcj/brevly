@@ -6,10 +6,17 @@ import { db, pg } from '@/infra/db'
 import { schema } from '@/infra/db/schemas'
 import { uploadFileToStorage } from '@/infra/storage/upload-file-to-storage'
 import { Either, makeRight } from '@/shared/either'
+import { z } from 'zod/v4'
 
-export async function exportLinks(
-  searchParam?: string
-): Promise<Either<never, { url: string }>> {
+const exportLinksSchema = z.object({
+  searchQuery: z.string().optional(),
+})
+
+type ExportLinksInput = z.infer<typeof exportLinksSchema>
+
+export async function exportLinks({
+  searchQuery,
+}: ExportLinksInput): Promise<Either<never, { url: string }>> {
   const { sql, params } = db
     .select({
       originalUrl: schema.links.originalUrl,
@@ -19,8 +26,8 @@ export async function exportLinks(
     })
     .from(schema.links)
     .where(
-      searchParam
-        ? ilike(schema.links.originalUrl, `%${searchParam}$`)
+      searchQuery
+        ? ilike(schema.links.originalUrl, `%${searchQuery}%`)
         : undefined
     )
     .toSQL()

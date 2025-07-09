@@ -1,4 +1,4 @@
-import { asc, desc } from 'drizzle-orm'
+import { asc, desc, ilike } from 'drizzle-orm'
 import { z } from 'zod/v4'
 import { db } from '@/infra/db'
 import { schema } from '@/infra/db/schemas'
@@ -9,6 +9,7 @@ export const fetchLinksSchema = z.object({
   pageSize: z.coerce.number().optional().default(20),
   sortBy: z.enum(['createdAt']).optional(),
   sortDirection: z.enum(['asc', 'desc']).optional(),
+  searchQuery: z.string().optional(),
 })
 
 type FetchLinksInput = z.infer<typeof fetchLinksSchema>
@@ -27,7 +28,7 @@ type FetchLinksOutput = {
 export async function fetchLinks(
   input: FetchLinksInput
 ): Promise<Either<never, FetchLinksOutput>> {
-  const { page, pageSize, sortBy, sortDirection } =
+  const { page, pageSize, sortBy, sortDirection, searchQuery } =
     fetchLinksSchema.parse(input)
 
   const [links, total] = await Promise.all([
@@ -40,6 +41,11 @@ export async function fetchLinks(
         createdAt: schema.links.createdAt,
       })
       .from(schema.links)
+      .where(
+        searchQuery
+          ? ilike(schema.links.originalUrl, `%${searchQuery}%`)
+          : undefined
+      )
       .orderBy(columns => {
         if (sortBy && sortDirection === 'asc') {
           return asc(columns[sortBy])
@@ -51,8 +57,8 @@ export async function fetchLinks(
 
         return desc(columns.id)
       })
-      .offset((page - 1) * pageSize)
-      .limit(pageSize),
+      .limit(pageSize)
+      .offset((page - 1) * pageSize),
 
     db.$count(schema.links),
   ])
