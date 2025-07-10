@@ -1,7 +1,9 @@
-import { useEffect, useState } from 'react';
-import { Link, useParams } from 'react-router';
+import { useEffect, useState } from 'react'
+import { Link, useParams } from 'react-router'
 import LogoIcon from '../assets/Logo_Icon.svg'
-import { useLinks } from '../store/link';
+import { useLinks } from '../store/link'
+
+const FRONT_URL = import.meta.env.VITE_FRONTEND_URL
 
 export function Redirect() {
   const { shortUrl } = useParams()
@@ -11,7 +13,10 @@ export function Redirect() {
   useEffect(() => {
     const fetchAndRedirect = async () => {
       try {
-        const { originalUrl } = await getLinkByShortUrl(shortUrl!)
+        const url = await navigator.clipboard.readText()
+        const isClipboard = url === `${FRONT_URL}/${shortUrl}` ? true : false
+
+        const { originalUrl } = await getLinkByShortUrl(shortUrl!, isClipboard)
 
         setOriginalUrl(originalUrl)
 
@@ -38,7 +43,11 @@ export function Redirect() {
             O link será aberto automaticamente em alguns instantes.
           </p>
 
-          <p>Não foi redirecionado? <Link to={originalUrl} className='text-blue-base underline'>Acesse aqui</Link></p>
+          <p>Não foi redirecionado?
+            <Link to={originalUrl} className='text-blue-base underline'>
+              Acesse aqui
+            </Link>
+          </p>
         </div>
       </div>
     </div>

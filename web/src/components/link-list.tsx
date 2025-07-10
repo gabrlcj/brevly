@@ -1,22 +1,22 @@
-import { useEffect, useTransition } from 'react';
-import { DownloadSimpleIcon, LinkIcon, SpinnerIcon } from '@phosphor-icons/react';
+import { useEffect, useTransition } from 'react'
+import { DownloadSimpleIcon, LinkIcon, SpinnerIcon } from '@phosphor-icons/react'
 import * as ScrollArea from '@radix-ui/react-scroll-area'
-import { Button } from './ui/button';
-import { LinkItem } from './link-item';
-import { useLinks } from '../store/link';
-import toast from 'react-hot-toast';
+import { Button } from './ui/button'
+import { LinkItem } from './link-item'
+import { useLinks } from '../store/link'
+import toast from 'react-hot-toast'
 
 export function LinkList() {
   const fetchLinks = useLinks(store => store.fetchLinks)
   const downloadCsv = useLinks(store => store.downloadCsv)
-  const links = useLinks(store => store.links)
+  const linkList = useLinks(store => store.linkList)
   const isLoading = useLinks(store => store.isLoading)
 
   const [isPending, startTransition] = useTransition()
 
   const handleDownloadCsv = () => {
     startTransition(async () => {
-      links.total > 0
+      linkList.total > 0
         ? await downloadCsv()
         : toast('Não existem links para download!')
     })
@@ -24,6 +24,9 @@ export function LinkList() {
 
   useEffect(() => {
     fetchLinks()
+
+    document.addEventListener('visibilitychange', fetchLinks)
+    return () => document.removeEventListener('visibilitychange', fetchLinks)
   }, [])
 
   return (
@@ -31,7 +34,12 @@ export function LinkList() {
       <div className='flex justify-between items-center pb-5'>
         <h1 className='text-lg text-gray-600 font-bold'>Meus links</h1>
 
-        <Button disabled={isPending} size='icon' colors='secondary' onClick={() => handleDownloadCsv()}>
+        <Button
+          disabled={isPending}
+          size='icon'
+          colors='secondary'
+          onClick={() => handleDownloadCsv()}
+        >
           {isPending
             ? <div className='flex items-center justify-center gap-2'>
                 <SpinnerIcon className='animate-spin' size={16} />
@@ -50,16 +58,20 @@ export function LinkList() {
           {isLoading
             ? <div className='flex flex-col justify-center items-center gap-3 py-6 border-t border-gray-200'>
                 <SpinnerIcon className='animate-spin' size={32} />
-                <p className='text-lg font-medium text-gray-400'>Carregando links...</p>
+                <p className='text-lg font-medium text-gray-400'>
+                  Carregando links...
+                </p>
               </div>
             : <>
-                {links.total === 0
+                {linkList.total === 0
                   ? <div className='flex flex-col justify-center items-center gap-3 py-6 border-t border-gray-200'>
                       <LinkIcon className='text-gray-400' size={32} />
-                      <p className='text-xs text-gray-500 m-0'>AINDA NÃO EXISTEM LINKS CADASTRADOS</p>
+                      <p className='text-xs text-gray-500 m-0'>
+                        AINDA NÃO EXISTEM LINKS CADASTRADOS
+                      </p>
                     </div>
                   : <div className='w-full space-y-2'>
-                      {links.links.map((link, _total) => {
+                      {linkList.links.map((link, _total) => {
                         return <LinkItem key={link.id} link={link} />
                       })}
                     </div>

@@ -1,11 +1,11 @@
 import { CopyIcon, TrashIcon } from '@phosphor-icons/react'
 import { Link } from 'react-router'
-import { toast } from 'react-hot-toast';
+import { toast } from 'react-hot-toast'
 import { Button } from './ui/button'
 import { useLinks } from '../store/link'
 import type { ILink } from '../shared/interfaces/link'
 
-const FRONT_URL = import.meta.env.VITE_FRONTEND_URL;
+const FRONT_URL = import.meta.env.VITE_FRONTEND_URL
 
 interface LinkItemProps {
   link: ILink
@@ -13,15 +13,16 @@ interface LinkItemProps {
 
 export function LinkItem({ link }: LinkItemProps) {
   const deleteLink = useLinks(store => store.deleteLink)
+  const registerAccess = useLinks(store => store.registerAccess)
 
   const copyToClipBoard = async () => {
     try {
-      await navigator.clipboard.writeText(`${FRONT_URL}/${link.shortUrl}`);
-      toast.success('Link copiado com sucesso!');
+      await navigator.clipboard.writeText(`${FRONT_URL}/${link.shortUrl}`)
+      toast.success('Link copiado com sucesso!')
     } catch (err) {
-      toast.error('Erro ao copiar');
+      toast.error('Erro ao copiar')
     }
-  };
+  }
 
   return (
     <div className='flex justify-between items-center py-4 pe-4 border-t border-gray-200'>
@@ -30,6 +31,7 @@ export function LinkItem({ link }: LinkItemProps) {
         target='_blank'
         rel='noopener noreferrer'
         className='flex flex-col gap-1'
+        onClick={() => registerAccess(link.shortUrl)}
       >
         <p className='text-md font-semibold text-blue-base'>
           brev.ly/{link.shortUrl}
