@@ -1,5 +1,5 @@
-import { LinkForm } from './link-form';
-import { LinkList } from './link-list';
+import { LinkForm } from './link-form'
+import { LinkList } from './link-list'
 
 export function Home() {
   return (

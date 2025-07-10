@@ -1,4 +1,4 @@
-import type { ComponentProps } from 'react';
+import type { ComponentProps } from 'react'
 
 interface InputRootProps extends ComponentProps<'input'> {
   error?: boolean
