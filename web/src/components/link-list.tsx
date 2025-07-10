@@ -1,9 +1,10 @@
-import { useEffect } from 'react';
+import { useEffect, useTransition } from 'react';
 import { DownloadSimpleIcon, LinkIcon, SpinnerIcon } from '@phosphor-icons/react';
 import * as ScrollArea from '@radix-ui/react-scroll-area'
 import { Button } from './ui/button';
 import { LinkItem } from './link-item';
 import { useLinks } from '../store/link';
+import toast from 'react-hot-toast';
 
 export function LinkList() {
   const fetchLinks = useLinks(store => store.fetchLinks)
@@ -11,8 +12,27 @@ export function LinkList() {
   const links = useLinks(store => store.links)
   const isLoading = useLinks(store => store.isLoading)
 
+  const [isPending, startTransition] = useTransition()
+
+  const handleDownloadCsv = () => {
+    startTransition(async () => {
+      links.total > 0
+        ? await downloadCsv()
+        : toast('Não existem links para download!')
+    })
+  }
+
   useEffect(() => {
-    fetchLinks()
+    const handleFocus = () => {
+      fetchLinks()
+    }
+
+    window.addEventListener('load', handleFocus)
+    window.addEventListener('focus', handleFocus)
+    return () => {
+      window.addEventListener('load', handleFocus)
+      window.removeEventListener('focus', handleFocus)
+    }
   }, [])
 
   return (
@@ -20,13 +40,17 @@ export function LinkList() {
       <div className='flex justify-between items-center pb-5'>
         <h1 className='text-lg text-gray-600 font-bold'>Meus links</h1>
 
-        <Button disabled={!links.total} size='icon' colors='secondary' onClick={() => {
-          if (links.total > 0) {
-            downloadCsv()
+        <Button disabled={isPending} size='icon' colors='secondary' onClick={() => handleDownloadCsv()}>
+          {isPending
+            ? <div className='flex items-center justify-center gap-2'>
+                <SpinnerIcon className='animate-spin' size={16} />
+                  Baixando CSV...
+              </div>
+            : <>
+                <DownloadSimpleIcon size={16} />
+                Baixar CSV
+              </>
           }
-        }}>
-          <DownloadSimpleIcon size={16} />
-          Baixar CSV
         </Button>
       </div>
 

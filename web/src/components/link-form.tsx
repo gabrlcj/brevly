@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useTransition } from 'react'
 import { SpinnerIcon, WarningIcon } from '@phosphor-icons/react'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useForm, type SubmitHandler } from 'react-hook-form'
@@ -7,6 +7,7 @@ import { Button } from './ui/button'
 import Logo from '../assets/Logo.svg'
 import { useLinks } from '../store/link'
 import { InputField, InputRoot } from './ui/input'
+import toast from 'react-hot-toast'
 
 const linkFormSchema = z.object({
   originalUrl: z.url({
@@ -29,18 +30,21 @@ export function LinkForm() {
     formState: { errors }
   } = useForm<LinkFormSchema>({ resolver: zodResolver(linkFormSchema) })
   const createLink = useLinks(store => store.createLink)
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isPending, startTransition] = useTransition()
 
   const onSubmit: SubmitHandler<LinkFormSchema> = async (
     { originalUrl, shortUrl }: LinkFormSchema
   ) => {
-    try {
-      setIsSubmitting(true)
-      await createLink({ originalUrl, shortUrl })
-      reset()
-    } finally {
-      setIsSubmitting(false)
-    }
+    startTransition(async () => {
+      try {
+        await createLink({ originalUrl, shortUrl })
+        reset()
+      } catch (error: any) {
+        if (error.status === 409) {
+          toast.error('Essa URL encurtada já existe!')
+        }
+      }
+    })
   }
 
   return (
@@ -70,7 +74,7 @@ export function LinkForm() {
                 id='originalUrl'
                 type='text'
                 placeholder='www.exemplo.com.br'
-                disabled={isSubmitting}
+                disabled={isPending}
                 {...register('originalUrl')}
               />
             </InputRoot>
@@ -98,7 +102,7 @@ export function LinkForm() {
               <InputField
                 id='shortUrl'
                 type='text'
-                disabled={isSubmitting}
+                disabled={isPending}
                 {...register('shortUrl')}
               />
             </InputRoot>
@@ -114,8 +118,8 @@ export function LinkForm() {
           </div>
         </div>
 
-        <Button type='submit' disabled={isSubmitting}>
-          {isSubmitting
+        <Button type='submit' disabled={isPending}>
+          {isPending
             ? <div className='flex items-center justify-center gap-2'>
                 <SpinnerIcon className='animate-spin' size={16} />
                 <p>Salvando...</p>
