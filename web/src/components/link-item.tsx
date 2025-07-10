@@ -13,7 +13,6 @@ interface LinkItemProps {
 
 export function LinkItem({ link }: LinkItemProps) {
   const deleteLink = useLinks(store => store.deleteLink)
-  const registerAccess = useLinks(store => store.registerAccess)
 
   const copyToClipBoard = async () => {
     try {
@@ -31,7 +30,6 @@ export function LinkItem({ link }: LinkItemProps) {
         target='_blank'
         rel='noopener noreferrer'
         className='flex flex-col gap-1'
-        onClick={async () => await registerAccess(link.shortUrl)}
       >
         <p className='text-md font-semibold text-blue-base'>
           brev.ly/{link.shortUrl}

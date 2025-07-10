@@ -23,16 +23,7 @@ export function LinkList() {
   }
 
   useEffect(() => {
-    const handleFocus = () => {
-      fetchLinks()
-    }
-
-    window.addEventListener('load', handleFocus)
-    window.addEventListener('focus', handleFocus)
-    return () => {
-      window.addEventListener('load', handleFocus)
-      window.removeEventListener('focus', handleFocus)
-    }
+    fetchLinks()
   }, [])
 
   return (

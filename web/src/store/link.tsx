@@ -10,22 +10,17 @@ const API_URL = import.meta.env.VITE_BACKEND_URL;
 type LinkState = {
   links: ILinkList
   isLoading: boolean
-}
-
-type LinkAction = {
   fetchLinks: () => void
   createLink: ({ originalUrl, shortUrl }: LinkFormSchema) => Promise<void>
   deleteLink: (shortUrl: string) => void
   getLinkByShortUrl: (shortUrl: string) => Promise<ILink>
-  registerAccess: (shortUrl: string) => Promise<string>
   downloadCsv: () => Promise<void>
 }
 
-export const useLinks = create<LinkState & LinkAction>()(
-  immer((set) => ({
-    links: { links: [], total: 0 },
-    isLoading: false,
-    fetchLinks: async () => {
+export const useLinks = create<LinkState, [['zustand/immer', never]]>(
+  immer((set, get) => {
+
+    async function fetchLinks() {
       set((state) => {
         state.isLoading = true;
       })
@@ -36,8 +31,9 @@ export const useLinks = create<LinkState & LinkAction>()(
         state.links = res.data
         state.isLoading = false
       })
-    },
-    createLink: async ({ originalUrl, shortUrl }: LinkFormSchema) => {
+    }
+
+    async function createLink({ originalUrl, shortUrl }: LinkFormSchema) {
       const res = await axios.post<ILink>(
         `${API_URL}/links`,
         { originalUrl, shortUrl }
@@ -47,8 +43,9 @@ export const useLinks = create<LinkState & LinkAction>()(
         state.links.links.unshift(res.data)
         state.links.total += 1
       })
-    },
-    deleteLink: async (shortUrl: string) => {
+    }
+
+    async function deleteLink(shortUrl: string) {
       const result = confirm(`Deseja realmente apagar o link ${shortUrl}?`);
 
       if (result) {
@@ -59,29 +56,36 @@ export const useLinks = create<LinkState & LinkAction>()(
           state.links.total -= 1
         })
       }
-    },
-    getLinkByShortUrl: async (shortUrl: string) => {
-      const { data } = await axios.get<ILink>(`${API_URL}/${shortUrl}`)
+    }
 
-      return data
-    },
-    registerAccess: async (shortUrl: string) => {
+    async function getLinkByShortUrl(shortUrl: string) {
       await axios.put(`${API_URL}/${shortUrl}/increment`)
 
-      const res = await axios.get<ILink>(`${API_URL}/${shortUrl}`)
+      const { data } = await axios.get<ILink>(`${API_URL}/${shortUrl}`)
 
       set(state => {
-        const index = state.links.links.findIndex(x => x.shortUrl === shortUrl)
+        const index = get().links.links.findIndex(link => link.shortUrl === shortUrl)
 
-        state.links.links[index] = res.data
+        state.links.links[index] = data
       })
 
-      return res.data.originalUrl
-    },
-    downloadCsv: async () => {
+      return data
+    }
+
+    async function downloadCsv() {
       const { data: { url }} = await axios.post<{ url: string }>(`${API_URL}/links/export`)
 
       await downloadUrl(url)
     }
-  }))
+
+    return {
+      links: { links: [], total: 0 },
+      isLoading: false,
+      fetchLinks,
+      createLink,
+      deleteLink,
+      getLinkByShortUrl,
+      downloadCsv
+    }
+  })
 )
