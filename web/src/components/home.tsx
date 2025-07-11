@@ -4,7 +4,7 @@ import { LinkList } from './link-list'
 export function Home() {
   return (
     <div className='h-full flex flex-col md:justify-center md:items-center'>
-      <div className='h-[680px] w-full flex flex-col justify-center gap-5 mt-auto md:flex-row'>
+      <div className='h-[680px] w-full flex flex-col items-center gap-5 md:justify-center md:items-start md:flex-row md:mt-auto'>
         <div className='w-full md:max-w-[440px]'>
           <LinkForm />
         </div>

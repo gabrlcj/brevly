@@ -35,7 +35,7 @@ export function LinkList() {
         <h1 className='text-lg text-gray-600 font-bold'>Meus links</h1>
 
         <Button
-          disabled={isPending}
+          disabled={isPending || linkList.total === 0}
           size='icon'
           colors='secondary'
           onClick={() => handleDownloadCsv()}
