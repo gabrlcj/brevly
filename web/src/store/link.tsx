@@ -10,6 +10,9 @@ const API_URL = import.meta.env.VITE_BACKEND_URL
 type LinkState = {
   linkList: ILinkList
   isLoading: boolean
+}
+
+type LinkStore = {
   fetchLinks: () => void
   createLink: ({ originalUrl, shortUrl }: LinkFormSchema) => Promise<void>
   deleteLink: (shortUrl: string) => void
@@ -18,7 +21,7 @@ type LinkState = {
   downloadCsv: () => Promise<void>
 }
 
-export const useLinks = create<LinkState, [['zustand/immer', never]]>(
+export const useLinks = create<LinkState & LinkStore, [['zustand/immer', never]]>(
   immer((set, get) => {
 
     async function fetchLinks() {
